@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2023/6/6 15:18
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : main(prp).py
 # @Software: PyCharm
 # @Note    :

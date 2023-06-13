@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2023/6/11 13:14
-# @Author  : CcQun
-# @Email   : 13698603020@163.com
+# @Author  :
+# @Email   :
 # @File    : main(mlm)(ddp).py.py
 # @Software: PyCharm
 # @Note    :
