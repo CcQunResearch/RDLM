@@ -8,22 +8,18 @@
 import sys
 import os
 import os.path as osp
-import glob
 import warnings
-from datasets import load_dataset
 
 warnings.filterwarnings("ignore")
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 dirname = osp.dirname(osp.abspath(__file__))
 sys.path.append(osp.join(dirname, '..'))
 
-import torch
 import time
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from Main.pargs import pargs
-from Main.tokenizer import count_words, create_vocab_file, TwitterTokenizer
+from Main.tokenizer import TwitterTokenizer
 from Main.model import BertWithPRP
 from Main.utils import write_log
 from Main.collator import PRPDataCollatorForPaddingAndMasking
@@ -82,7 +78,7 @@ if __name__ == '__main__':
     )
 
     model = BertWithPRP(config)
-    model.load_model(load_path)
+    # model.load_model(load_path)
     device = args.gpu if args.cuda else 'cpu'
     model.to(device)
 
@@ -106,14 +102,24 @@ if __name__ == '__main__':
             Y_PaP = Y_PaP.to(device)
 
             mlm_logits = model(posts['input_ids'], posts['attention_mask'])
+            print(posts['input_ids'].shape[0])
             mlm_loss = F.cross_entropy(mlm_logits.view(-1, config.vocab_size), posts['labels'].view(-1),
                                        ignore_index=-100)
 
-            pooler_output1 = model.pooler(posts['input_ids'], posts['attention_mask'])
-            pooler_output2 = model.pooler(posts['input_ids'], posts['attention_mask'])
-            root_logits = model.root_logits(pooler_output1, pooler_output2)
-            branch_logits = model.branch_logits(pooler_output1, pooler_output2)
-            parent_logits = model.parent_logits(pooler_output1, pooler_output2)
+            # pooler_output1 = model.pooler(posts['input_ids'], posts['attention_mask'], b=args.b)
+            # pooler_output2 = model.pooler(posts['input_ids'], posts['attention_mask'], b=args.b)
+            # root_logits = model.root_logits(pooler_output1, pooler_output2)
+            # branch_logits = model.branch_logits(pooler_output1, pooler_output2)
+            # parent_logits = model.parent_logits(pooler_output1, pooler_output2)
+            # root_loss = F.binary_cross_entropy_with_logits(root_logits, Y_RoP.float())
+            # branch_loss = F.binary_cross_entropy_with_logits(branch_logits, Y_BrP.float())
+            # parent_loss = F.binary_cross_entropy_with_logits(parent_logits, Y_PaP.float())
+            # prp_loss = root_loss + branch_loss + parent_loss
+
+            pooler_output = model.pooler(posts['input_ids'], posts['attention_mask'], b=args.b)
+            root_logits = model.root_logits(pooler_output, pooler_output)
+            branch_logits = model.branch_logits(pooler_output, pooler_output)
+            parent_logits = model.parent_logits(pooler_output, pooler_output)
             root_loss = F.binary_cross_entropy_with_logits(root_logits, Y_RoP.float())
             branch_loss = F.binary_cross_entropy_with_logits(branch_logits, Y_BrP.float())
             parent_loss = F.binary_cross_entropy_with_logits(parent_logits, Y_PaP.float())
@@ -131,7 +137,7 @@ if __name__ == '__main__':
                 grad_accumulation_counter = 0
                 step += 1
 
-            if (i + 1) % 20000 == 0:
+            if (i + 1) % 100 == 0:
                 print(
                     f"  epoch {epoch + 1} have trained {i + 1} samples, loss: {loss.item()}, training Step: {step}",
                     flush=True)

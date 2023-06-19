@@ -20,6 +20,7 @@ class DataCollatorForPaddingAndMasking(DataCollatorForLanguageModeling):
         # Masking
         if self.mlm:
             batch["input_ids"], batch["labels"] = self.torch_mask_tokens(batch["input_ids"])
+            # batch["input_ids"], batch["labels"] = self.mask_tokens(batch["input_ids"])
 
         return batch
 
@@ -35,6 +36,7 @@ class PRPDataCollatorForPaddingAndMasking(DataCollatorForLanguageModeling):
         # Masking
         if self.mlm:
             posts["input_ids"], posts["labels"] = self.torch_mask_tokens(posts["input_ids"])
+            # posts["input_ids"], posts["labels"] = self.mask_tokens(posts["input_ids"])
 
         Y_RoP = torch.tensor(claim["yrop"])
         Y_BrP = torch.tensor(claim["ybrp"])

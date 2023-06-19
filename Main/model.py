@@ -40,9 +40,23 @@ class BertWithPRP(torch.nn.Module):
         self.parent_projection = nn.Linear(config.hidden_size, config.hidden_size)
         self.branch_projection = nn.Linear(config.hidden_size, config.hidden_size)
 
-    def pooler(self, input_ids, attention_mask):
-        outputs = self.bert(input_ids, attention_mask=attention_mask)
-        return outputs.pooler_output
+    # def pooler(self, input_ids, attention_mask):
+    #     outputs = self.bert(input_ids, attention_mask=attention_mask)
+    #     return outputs.pooler_output
+
+    def pooler(self, input_ids, attention_mask, b=40):
+        n_batches = input_ids.shape[0] // b
+        if input_ids.shape[0] % b:
+            n_batches += 1
+        pooled_outputs = []
+        for i in range(n_batches):
+            start = i * b
+            end = start + b
+            outputs = self.bert(input_ids[start:end], attention_mask=attention_mask[start:end])
+            pooled_outputs.append(outputs.pooler_output)
+        pooled_outputs = torch.cat(pooled_outputs, dim=0)
+
+        return pooled_outputs
 
     def root_logits(self, pooler_output1, pooler_output2):
         return torch.matmul(self.root_projection(pooler_output1), self.root_projection(pooler_output2).transpose(0, 1))

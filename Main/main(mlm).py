@@ -132,7 +132,7 @@ if __name__ == '__main__':
                 grad_accumulation_counter = 0
                 step += 1
 
-            if (i + 1) * batch_size % 8064 == 0:
+            if (i + 1) * batch_size % accumulation_batch_size == 0:
                 print(
                     f"  epoch {epoch + 1} have trained {(i + 1) * batch_size} samples, loss: {loss.item()}, training Step: {step}",
                     flush=True)

@@ -36,7 +36,7 @@ from torch.utils.data.distributed import DistributedSampler
 def train(rank, ngpus_per_node, args):
     # print(rank)
     # os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)
-    dist.init_process_group(backend='gloo', init_method='tcp://127.0.0.1:23451', world_size=ngpus_per_node, rank=rank)
+    dist.init_process_group(backend='nccl', init_method=f'file://{dirname}/tmpfile', world_size=ngpus_per_node, rank=rank)
 
     vocab_size = args.vocab_size
     special_tokens = args.special_tokens
@@ -77,12 +77,12 @@ def train(rank, ngpus_per_node, args):
 
     dataset = load_dataset('text', data_files={'train': nopt_text_file_paths},
                            cache_dir=twitter_nopt_text_cache_path)
-    tokenized_dataset = dataset.map(add_special_tokens_and_convert_to_ids, remove_columns=["text"], num_proc=24)
+    tokenized_dataset = dataset.map(add_special_tokens_and_convert_to_ids, remove_columns=["text"], num_proc=110)
     train_sampler = DistributedSampler(tokenized_dataset['train'])
     collator = DataCollatorForPaddingAndMasking(tokenizer=tokenizer, mlm=True, mlm_probability=0.12)
     # dataloader = DataLoader(tokenized_dataset['train'], batch_size=batch_size, shuffle=True, collate_fn=collator,
     #                         num_workers=6, sampler=train_sampler)
-    dataloader = DataLoader(tokenized_dataset['train'], batch_size=batch_size, collate_fn=collator, num_workers=24,
+    dataloader = DataLoader(tokenized_dataset['train'], batch_size=batch_size, collate_fn=collator, num_workers=16,
                             sampler=train_sampler)
 
     config = BertConfig(
@@ -128,15 +128,15 @@ def train(rank, ngpus_per_node, args):
                 grad_accumulation_counter = 0
                 step += 1
 
-            if (i + 1) * batch_size % 80640 == 0 and rank == 0:
+            if (i + 1) * batch_size % (accumulation_batch_size * 100) == 0 and rank == 0:
                 print(
-                    f"  epoch {epoch + 1} have trained {(i + 1) * batch_size} samples, loss: {loss.item()}, training Step: {step}",
+                    f"  epoch {epoch + 1} per GPU have trained {(i + 1) * batch_size} samples, loss: {loss.item()}, training Step: {step}",
                     flush=True)
         if rank == 0:
-            model.save_model(save_path)
+            model.module.save_model(save_path)
             write_log(log, f"Epoch: {epoch + 1}, Loss: {loss.item()}, Training Step: {step}")
     if rank == 0:
-        model.save_model(save_path)
+        model.module.save_model(save_path)
 
 
 if __name__ == '__main__':
