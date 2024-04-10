@@ -10,9 +10,9 @@ from torch import nn
 from transformers import BertConfig, BertModel
 
 
-class BertNoPRP(torch.nn.Module):
+class BertNoPEP(torch.nn.Module):
     def __init__(self, config: BertConfig):
-        super(BertNoPRP, self).__init__()
+        super(BertNoPEP, self).__init__()
 
         self.bert = BertModel(config)
         self.mlm = nn.Linear(config.hidden_size, config.vocab_size)
@@ -29,9 +29,9 @@ class BertNoPRP(torch.nn.Module):
         self.bert = BertModel.from_pretrained(load_path)
 
 
-class BertWithPRP(torch.nn.Module):
+class BertWithPEP(torch.nn.Module):
     def __init__(self, config: BertConfig):
-        super(BertWithPRP, self).__init__()
+        super(BertWithPEP, self).__init__()
 
         self.bert = BertModel(config)
         self.mlm = nn.Linear(config.hidden_size, config.vocab_size)

@@ -25,9 +25,9 @@ def pargs():
     parser.add_argument('--unsup_dataset', type=str, default='UTwitter')
     parser.add_argument('--post_num_limit', type=int, default=80)
 
-    parser.add_argument('--prp_epochs', type=int, default=40)
+    parser.add_argument('--pep_epochs', type=int, default=40)
     # parser.add_argument('--post_batch_size', type=int, default=32)
-    parser.add_argument('--prp_batch_size', type=int, default=64)
+    parser.add_argument('--pep_batch_size', type=int, default=64)
     parser.add_argument('--b', type=int, default=20)
 
     parser.add_argument('--load_name', type=str, default='')

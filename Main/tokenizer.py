@@ -16,9 +16,6 @@ import os.path as osp
 from transformers import PreTrainedTokenizer
 
 
-
-
-
 class TwitterTokenizer(PreTrainedTokenizer):
     def __init__(self, vocab_file, special_tokens, **kwargs):
         super().__init__(**kwargs)

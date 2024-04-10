@@ -23,7 +23,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from Main.pargs import pargs
 from Main.tokenizer import count_words, create_vocab_file, TwitterTokenizer
-from Main.model import BertNoPRP
+from Main.model import BertNoPEP
 from Main.utils import write_log
 from Main.collator import DataCollatorForPaddingAndMasking
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
@@ -94,7 +94,7 @@ def train(rank, ngpus_per_node, args):
     )
 
     device = torch.device(f"cuda:{rank}")
-    model = BertNoPRP(config).to(device)
+    model = BertNoPEP(config).to(device)
     model = DDP(model, find_unused_parameters=True, device_ids=[rank])
 
     grad_accumulation_steps = accumulation_batch_size // batch_size

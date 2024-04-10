@@ -13,7 +13,7 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
-class PRPDataset(Dataset):
+class PEPDataset(Dataset):
     def __init__(self, data_path, tokenizer, max_position_embeddings, post_num_limit=128, chunk_size=2048,
                  preload_num=128):
         # path

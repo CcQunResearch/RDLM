@@ -24,7 +24,7 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from Main.pargs import pargs
 from Main.tokenizer import count_words, create_vocab_file, TwitterTokenizer
-from Main.model import BertNoPRP
+from Main.model import BertNoPEP
 from Main.utils import write_log
 from Main.collator import DataCollatorForPaddingAndMasking
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
@@ -91,12 +91,12 @@ if __name__ == '__main__':
         type_vocab_size=type_vocab_size,
     )
 
-    model = BertNoPRP(config)
+    model = BertNoPEP(config)
     device = args.gpu if args.cuda else 'cpu'
     model.to(device)
     # model = nn.DataParallel(model)
 
-    # model = BertNoPRP(config)
+    # model = BertNoPEP(config)
     # if torch.cuda.device_count() > 1:  # 如果有多个GPU可用，使用DataParallel进行并行训练
     #     print("Let's use", torch.cuda.device_count(), "GPUs!", flush=True)
     #     model = nn.DataParallel(model)

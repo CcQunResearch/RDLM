@@ -25,7 +25,7 @@ class DataCollatorForPaddingAndMasking(DataCollatorForLanguageModeling):
         return batch
 
 
-class PRPDataCollatorForPaddingAndMasking(DataCollatorForLanguageModeling):
+class PEPDataCollatorForPaddingAndMasking(DataCollatorForLanguageModeling):
     def __init__(self, tokenizer, mlm=True, mlm_probability=0.12):
         super().__init__(tokenizer=tokenizer, mlm=mlm, mlm_probability=mlm_probability)
 
