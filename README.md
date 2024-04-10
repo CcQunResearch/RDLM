@@ -1,6 +1,6 @@
-# RDLM
+# SoLM
 
-Source code for RDLM in paper: 
+Source code for SoLM in paper: 
 
 **Enhancing Rumor Detection Methods with Propagation Structure Infused Language Model**
 
@@ -12,6 +12,7 @@ The pretraining code can be run in the following ways:
 nohup python main\(mlm\).py --gpu 4 &
 nohup python main\(mlm\)\(parallel\).py &
 nohup python -m torch.distributed.launch --nproc_per_node=7 --use_env main\(mlm\)\(ddp\).py &
+nohup python main\(prp\).py --gpu 0 &
 ```
 
 ## Dependencies
